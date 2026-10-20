@@ -1,17 +1,17 @@
 using System.Runtime.InteropServices;
 using System.Text.Json;
 
-namespace KeepTeamsActive;
+namespace KeepAwake;
 
 internal static class Program
 {
     [STAThread]
     private static void Main(string[] args)
     {
-        using var mutex = new Mutex(true, @"Local\KeepTeamsActive.Julian", out bool first);
+        using var mutex = new Mutex(true, @"Local\KeepAwake", out bool first);
         if (!first)
         {
-            MessageBox.Show("KeepTeamsActive ya está abierto. Busca su icono junto al reloj.", "KeepTeamsActive");
+            MessageBox.Show("KeepAwake ya está abierto. Busca su icono junto al reloj.", "KeepAwake");
             return;
         }
         ApplicationConfiguration.Initialize();
@@ -37,14 +37,14 @@ internal sealed class MainForm : Form
     private readonly NumericUpDown interval = new() { Minimum = 5, Maximum = 3600, Value = 30, Width = 90, AccessibleName = "Intervalo en segundos" };
     private readonly Icon activeIcon = MakeIcon(Color.SeaGreen);
     private readonly Icon inactiveIcon = MakeIcon(Color.SlateGray);
-    private readonly string settingsPath = Path.Combine(AppContext.BaseDirectory, "KeepTeamsActive.settings.json");
+    private readonly string settingsPath = Path.Combine(AppContext.BaseDirectory, "KeepAwake.settings.json");
     private bool active;
     private bool exiting;
     private int renewals;
 
     public MainForm(bool selfTest)
     {
-        Text = "KeepTeamsActive";
+        Text = "KeepAwake";
         ClientSize = new Size(470, 285);
         AutoScaleMode = AutoScaleMode.Dpi;
         FormBorderStyle = FormBorderStyle.FixedDialog;
@@ -60,7 +60,7 @@ internal sealed class MainForm : Form
         row.Controls.Add(new Label { Text = "Intervalo de renovación (segundos):", AutoSize = true, Padding = new Padding(0, 4, 0, 0) });
         row.Controls.Add(interval);
         layout.Controls.Add(row);
-        layout.Controls.Add(new Label { Text = "Mantiene Windows y la pantalla despiertos.\nEl estado de Teams depende de Teams y sus políticas.\nCerrar esta ventana la oculta en la bandeja.", AutoSize = true, Margin = new Padding(0, 0, 0, 12) });
+        layout.Controls.Add(new Label { Text = "Mantiene Windows y la pantalla despiertos.\nÚtil para descargas, presentaciones o procesos largos.\nCerrar esta ventana la oculta en la bandeja.", AutoSize = true, Margin = new Padding(0, 0, 0, 12) });
         var buttons = new FlowLayoutPanel { AutoSize = true, Margin = Padding.Empty };
         var hide = new Button { Text = "A la bandeja", AutoSize = true };
         var quit = new Button { Text = "Salir", AutoSize = true };
@@ -79,7 +79,7 @@ internal sealed class MainForm : Form
         menu.Items.Add(toggleMenu);
         menu.Items.Add(new ToolStripSeparator());
         menu.Items.Add("Salir", null, (_, _) => Quit());
-        tray = new NotifyIcon { Icon = inactiveIcon, Text = "KeepTeamsActive — Desactivado", ContextMenuStrip = menu, Visible = true };
+        tray = new NotifyIcon { Icon = inactiveIcon, Text = "KeepAwake — Desactivado", ContextMenuStrip = menu, Visible = true };
         tray.DoubleClick += (_, _) => ShowWindow();
         toggle.Click += (_, _) => Toggle();
         toggleMenu.Click += (_, _) => Toggle();
@@ -140,7 +140,7 @@ internal sealed class MainForm : Form
         status.ForeColor = active ? Color.DarkGreen : Color.DimGray;
         toggle.Text = toggleMenu.Text = active ? "Desactivar" : "Activar";
         tray.Icon = Icon = active ? activeIcon : inactiveIcon;
-        tray.Text = "KeepTeamsActive — " + (active ? "Activado" : "Desactivado");
+        tray.Text = "KeepAwake — " + (active ? "Activado" : "Desactivado");
     }
     private void ShowWindow() { Show(); WindowState = FormWindowState.Normal; Activate(); }
     private void Quit() { exiting = true; Close(); }
